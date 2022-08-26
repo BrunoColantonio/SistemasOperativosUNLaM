@@ -49,8 +49,14 @@ validarDirectorio() {
 
 listarArchCambios() {
 #	mapfile -t usuarios < <(cut -d"-" -f4 "$directorio/$dir" | sort -u)
-
+	
+	tiempoActual=$(stat "$directorio" | grep Modify | awk '{print$3}')
+	
+	if [ "$tiempoActual" != "$ultimoTiempo" ]
+	then
 	find "$directorio" -newermt '1 second ago'
+	fueModificado="true"
+	fi
 }
 
 pesoArchCambios() {
@@ -95,6 +101,8 @@ do
 	esac
 done
 
+fueModificado="false"
+ultimoTiempo=$(stat "$directorio" | grep Modify | awk '{print$3}')
 while true
 do
 	for i in ${!opciones[*]}
@@ -114,6 +122,12 @@ do
 			;;
 		esac
 	done
+	
+	if [ "$fueModificado" == "true" ]
+	then
+	ultimoTiempo=$(stat "$directorio" | grep Modify | awk '{print$3}')
+	fueModificado="true"
+	fi
 done
 
 
