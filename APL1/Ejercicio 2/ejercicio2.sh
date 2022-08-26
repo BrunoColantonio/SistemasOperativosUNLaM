@@ -151,7 +151,7 @@ case $1 in
 	'--logs')
 		if [ "$2" ]
 		then
-			directorio="$2"
+			directorio=$(realpath "$2")
 		else
 			directorio=.
 		fi
