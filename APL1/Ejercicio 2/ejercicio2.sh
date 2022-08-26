@@ -151,10 +151,11 @@ case $1 in
 	'--logs')
 		if [ "$2" ]
 		then
-			directorio=$(realpath "$2")
+			directorio="$2"
 		else
 			directorio=.
 		fi
+		directorio=$(realpath "$directorio")
 		validarDirectorio
 		calcularSalida
 		exit
