@@ -39,15 +39,16 @@ validarDirectorio() {
 	if [ ! -d "$directorio" ]
 	then
 		echo "Error: Directorio inexistente."
-	elif !test "$directorio" -r
+		exit
+	elif ! test -r "$directorio"
 	then
 		echo "Error:  No se poseen permisos de lectura sobre el directorio."
+		exit
 	fi
-	exit
 }
 
 calcularSalida() {
-	for dir in $(ls $directorio)
+	for dir in $(ls "$directorio")
 	do
 		declare -A cantLlamadasXUsuarioSemana
 		declare -A cantLlamadasBajoMediaXUsuarioSemana
@@ -148,9 +149,9 @@ calcularSalida() {
 
 case $1 in
 	'--logs')
-		if [ $2 ]
+		if [ "$2" ]
 		then
-			directorio=$2
+			directorio="$2"
 		else
 			directorio=.
 		fi
