@@ -1,5 +1,23 @@
 #!/bin/bash
 
+# -------------------------- ENCABEZADO --------------------------
+
+# Nombre del script: ejercicio2.sh
+# Número de APL: 1
+# Número de ejercicio: 2
+# Número de entrega: Entrega
+
+# ---------------- INTEGRANTES DEL GRUPO ----------------
+
+#          Apellido, Nombre         | DNI
+#           Agostino, Matías          | 43861796
+# Colantonio, Bruno Ignacio | 43863195
+#    Fernández, Rocío Belén    | 43875244
+#    Galo, Santiago Ezequiel    | 43473506
+#  Panigazzi, Agustín Fabián  | 43744593
+
+# -------------------- FIN DE ENCABEZADO --------------------
+
 # FUNCIÓN DE AYUDA
 
 ayuda() {
@@ -51,7 +69,7 @@ calcularSalida() {
 				promedioTiempoUsuario=0
 
 				mapfile -t llamadas < <(grep "${fechas[$i]}[[:space:]][0-9][0-9]:[0-9][0-9]:[0-9][0-9]-${usuarios[$j]}" "$directorio/$dir")
-				for (( k=0; k<${#llamadas[@]}; k+=2 ));
+				for (( k=0; k<${#llamadas[@]}; k+=2 ))
 				do
 					hora1=$(echo ${llamadas[$k]} | cut -d'-' -f1-3)
 					hora2=$(echo ${llamadas[(($k+1))]} | cut -d'-' -f1-3)
@@ -76,7 +94,7 @@ calcularSalida() {
 			for j in ${!usuarios[*]}
 			do
 				mapfile -t llamadas < <(grep "${fechas[$i]}[[:space:]][0-9][0-9]:[0-9][0-9]:[0-9][0-9]-${usuarios[$j]}" "$directorio/$dir")
-				for (( k=0; k<${#llamadas[@]}; k+=2 ));
+				for (( k=0; k<${#llamadas[@]}; k+=2 ))
 				do
 					hora1=$(echo ${llamadas[$k]} | cut -d'-' -f1-3)
 					hora2=$(echo ${llamadas[(($k+1))]} | cut -d'-' -f1-3)
@@ -150,3 +168,5 @@ case $1 in
 		exit
 	;;
 esac
+
+# ------------------------ FIN DE ARCHIVO ------------------------
