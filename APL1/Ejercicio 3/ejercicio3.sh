@@ -32,7 +32,6 @@ ayuda() {
 	echo "./ejercicio3.sh [-h / -? / --help]: Muestra la ayuda"
 	echo "./ejercicio3.sh [--logs]: Realiza los cálculos anteriormente realizados sobre el directorio actual"
 	echo "./ejercicio3.sh [--logs <direccion_directorio>]: Realiza los cálculos anteriormente mencionados en el directorio cuya ubicación es ubicacion_directorio"
-	return 0
 }
 
 validarDirectorio() {
