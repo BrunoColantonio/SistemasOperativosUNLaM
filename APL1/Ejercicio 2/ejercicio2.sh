@@ -32,7 +32,6 @@ ayuda() {
 	echo "./ejercicio2.sh [-h / -? / --help]: Muestra la ayuda"
 	echo "./ejercicio2.sh [--logs]: Realiza los cálculos anteriormente realizados sobre el directorio actual"
 	echo "./ejercicio2.sh [--logs <direccion_directorio>]: Realiza los cálculos anteriormente mencionados en el directorio cuya ubicación es ubicacion_directorio"
-	return 0
 }
 
 validarDirectorio() {
@@ -56,12 +55,12 @@ calcularSalida() {
 		mapfile -t usuarios < <(cut -d"-" -f4 "$directorio/$dir" | sort -u)
 		mapfile -t fechas < <(cut -d" " -f1 "$directorio/$dir" | sort -u)
 		
-		for i in ${!fechas[*]}
+		for fecha in "${fechas[@]}"
 		do
 			cantLlamadasDia=0
 			promedioTiempoDia=0
 			cantLlamadasBajoMediaDia=0
-			for j in ${!usuarios[*]}
+			for usuario in "${usuarios[@]}"
 			do
 				declare -A cantLlamadasXUsuarioDia
 				declare -A promedioLlamadasXUsuarioDia
@@ -69,7 +68,7 @@ calcularSalida() {
 				cantLlamadasUsuario=0
 				promedioTiempoUsuario=0
 
-				mapfile -t llamadas < <(grep "${fechas[$i]}[[:space:]][0-9][0-9]:[0-9][0-9]:[0-9][0-9]-${usuarios[$j]}" "$directorio/$dir")
+				mapfile -t llamadas < <(grep "$fecha[[:space:]][0-9][0-9]:[0-9][0-9]:[0-9][0-9]-$usuario" "$directorio/$dir")
 				for (( k=0; k<${#llamadas[@]}; k+=2 ))
 				do
 					hora1=$(echo ${llamadas[$k]} | cut -d'-' -f1-3)
@@ -77,14 +76,14 @@ calcularSalida() {
 					duracion=$(( $(date -d "$hora2" "+%s") - $(date -d "$hora1" "+%s") ))
 
 					((promedioTiempoDia += $duracion ))
-					((promedioLlamadasXUsuarioDia[ ${usuarios[$j]} ] += $duracion ))
+					((promedioLlamadasXUsuarioDia[ $usuario ] += $duracion ))
 
 					((cantLlamadasDia++))
-					((cantLlamadasXUsuarioDia[ ${usuarios[$j]} ]++))
-					((cantLlamadasXUsuarioSemana[ ${usuarios[$j]} ]++))
+					((cantLlamadasXUsuarioDia[ $usuario ]++))
+					((cantLlamadasXUsuarioSemana[ $usuario ]++))
 				done
 
-				((promedioLlamadasXUsuarioDia[ ${usuarios[$j]} ] /= cantLlamadasXUsuarioDia[ ${usuarios[$j]} ]))
+				((promedioLlamadasXUsuarioDia[ $usuario ] /= cantLlamadasXUsuarioDia[ $usuario ]))
 
 			done
 			
@@ -92,9 +91,9 @@ calcularSalida() {
 
 			# Búsqueda de llamadas por debajo de la media en el día
 
-			for j in ${!usuarios[*]}
+			for usuario in "${usuarios[@]}"
 			do
-				mapfile -t llamadas < <(grep "${fechas[$i]}[[:space:]][0-9][0-9]:[0-9][0-9]:[0-9][0-9]-${usuarios[$j]}" "$directorio/$dir")
+				mapfile -t llamadas < <(grep "$fecha[[:space:]][0-9][0-9]:[0-9][0-9]:[0-9][0-9]-$usuario" "$directorio/$dir")
 				for (( k=0; k<${#llamadas[@]}; k+=2 ))
 				do
 					hora1=$(echo ${llamadas[$k]} | cut -d'-' -f1-3)
@@ -104,12 +103,12 @@ calcularSalida() {
 					if [ $duracion -lt $promedioTiempoDia ]
 					then
 						(( cantLlamadasBajoMediaDia++ ))
-						((cantLlamadasBajoMediaXUsuarioSemana[ ${usuarios[$j]} ]++))
+						((cantLlamadasBajoMediaXUsuarioSemana[ $usuario ]++))
 					fi
 				done
 			done
 
-			echo "---------------------------- Fecha: ${fechas[$i]} ----------------------------"
+			echo "---------------------------- Fecha: $fecha ----------------------------"
 
 			echo "1. Promedio de tiempo de las llamadas realizadas en el día: "$promedioTiempoDia
 
@@ -155,7 +154,7 @@ case $1 in
 		else
 			directorio=.
 		fi
-		directorio=$(realpath "$directorio")
+		directorio="$(realpath "$directorio")"
 		validarDirectorio
 		calcularSalida
 		exit
