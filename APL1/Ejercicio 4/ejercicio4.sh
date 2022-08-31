@@ -30,18 +30,12 @@ ayuda() {
 	return 0
 }
 
-directorioNoValido(){
-	echo "Error. Directorio no valido"
-	ayuda
-	exit 1
-}
-
 calcularSalida(){
 
 	cantArchivos=0
-	if [ ! -d "$directorio" ] ; then
-		directorioNoValido "$directorio"
-	fi
+	comentariosTotales=0
+	codigosTotales=0
+	lineasTotales=0
 	
 	for i in ${!extensiones[*]}
 	do
@@ -54,11 +48,14 @@ calcularSalida(){
 		do
 			if [ -f "$arch" ]
 			then
-				(( cantArchivos++ ))
+			(( cantArchivos++ ))
 			comentarios=0
 			comentariosMultilinea=0
 			codigos=0	
 				
+			#(( lineasTotales+=$(cat "$arch" | wc -l) ))
+			
+			
 			echo El archivo analizado es: $arch
 			
 			#Se analizan los comentarios del tipo /* */ (incluyendo multilinea)
@@ -121,17 +118,28 @@ calcularSalida(){
 			((comentarios+=validas[1]))
 			((comentarios+=comentariosMultilinea))
 			((codigos-=comentariosMultilinea))
+			
+			(( lineasTotales+=comentarios ))
+			(( lineasTotales+=codigos ))
 			echo Cantidad de lineas de codigo: $codigos 
 			echo Cantidad de comentarios: $comentarios
 			
-			echo 
+			echo
+			(( comentariosTotales+=comentarios ))
+			(( codigosTotales+=codigos )) 
 			fi
 		done		
 	done
 	
 	if [ $cantArchivos -gt 0 ]
 	then
-		echo Archivos totales analizados: $cantArchivos
+		porcentajeCodigo=`bc -l <<< "scale=2; ($codigosTotales/$lineasTotales)*100"`
+		porcentajeComentarios=`bc -l <<< "scale=2; ($comentariosTotales/$lineasTotales)*100"`
+		echo "-------INFORMACION SOLICITADA-------"
+		echo "Archivos totales analizados: " $cantArchivos 
+		echo "Lineas totales analizadas: " $lineasTotales
+		echo "Lineas de codigo totales: " $codigosTotales "($porcentajeCodigo %)"
+		echo "Comentarios totales: " $comentariosTotales "($porcentajeComentarios %)"
 	else
 		echo "No hay archivos para analizar en la ruta pasada con esas extensiones."
 	fi
@@ -155,17 +163,13 @@ then
     directorio="$2"
     IFS=',' read -ra extensiones <<< "$4"
     validarDirectorio
-else
-    echo "Error de sintaxis en la entrada."
-    ayuda
-fi
-
-
-if [[ "$1" == "--help" ||  "$1" == "-h" || "$1" == "--?" ]]
+    calcularSalida
+elif [[ "$1" == "--help" ||  "$1" == "-h" || "$1" == "--?" ]]
 then
 	ayuda
 else
-	calcularSalida
+    echo "Error de sintaxis en la entrada."
+    ayuda
 fi
 
 # ------------------------ FIN DE ARCHIVO ------------------------
