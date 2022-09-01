@@ -37,15 +37,23 @@ calcularSalida(){
 	codigosTotales=0
 	lineasTotales=0
 	
+	shopt -s globstar
+	
 	for i in ${!extensiones[*]}
 	do
+		${IFS+"false"} && unset oldifs || oldifs="$IFS"   
 		
-		rutaPadre=$(find "$directorio" -name "*."${extensiones[i]}"") 
-
+		rutaPadre=$(find "$directorio"  -name "*."${extensiones[i]}"" -printf '%p@') 
+		
+		#rutaSeparada=$(echo -n $var | echo -e "@"$archivo)		
 		#for arch in "${directorio}"**/*."${extensiones[i]}" 
 		
-		for arch in $rutaPadre 
+		
+		IFS="@"
+		for arch in $rutaPadre
 		do
+			${oldifs+"false"} && unset IFS || IFS="$oldifs"
+			
 			if [ -f "$arch" ]
 			then
 			(( cantArchivos++ ))
@@ -61,7 +69,7 @@ calcularSalida(){
 			#Se analizan los comentarios del tipo /* */ (incluyendo multilinea)
 			#Lo unico que no se tiene en cuenta son los del tipo /* here is your comment */ code :( (no saliò)
 			
-			(( comentariosMultilinea+=$(awk '
+			(( comentariosMultilinea+=$(cat "$arch" | awk '
 			BEGIN{ 
 			comentarios=0 
 			}
@@ -70,7 +78,7 @@ calcularSalida(){
 			}
 			END{
 			print comentarios
-			}' $arch) ))
+			}') ))
 			
 			
 			#A continuaciòn se analizan los comentarios de una sola linea, //
@@ -80,7 +88,7 @@ calcularSalida(){
 			#luego, a travès del comando read se pasa a un array (validas)
 			#(optimizar!!!)
 			
-			respuestas=$(cat $arch | awk '
+			respuestas=$(cat "$arch" | awk '
 			BEGIN{
 			FS="//"
 			comentarios=0
@@ -127,8 +135,12 @@ calcularSalida(){
 			echo
 			(( comentariosTotales+=comentarios ))
 			(( codigosTotales+=codigos )) 
+		
 			fi
-		done		
+			
+			IFS="@"
+		done
+		${oldifs+"false"} && unset IFS || IFS="$oldifs"
 	done
 	
 	if [ $cantArchivos -gt 0 ]
@@ -144,6 +156,7 @@ calcularSalida(){
 		echo "No hay archivos para analizar en la ruta pasada con esas extensiones."
 	fi
 	
+	shopt -u globstar
 }
 
 validarDirectorio() {
