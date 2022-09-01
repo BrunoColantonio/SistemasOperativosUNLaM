@@ -27,10 +27,16 @@ ayuda() {
 	echo "---------------- AYUDA - FORMATO DEL SCRIPT ----------------"
 	echo "./papelera.sh [-h / -? / --help]: Muestra la ayuda"
 	echo "./papelera.sh [--listar]: Lista los archivos que contienen la papelera de reciclaje, informando nombre de archivo y su ubicación original."
-	echo "./papelera.sh [--recuperar <nombre_archivo>]: Recupera el archivo pasado por parámetro a su ubicación original"
+	echo "./papelera.sh [--recuperar \"<nombre_archivo>\"]: Recupera el archivo pasado por parámetro a su ubicación original"
 	echo "./papelera.sh [--vaciar]: Vacía la papelera de reciclaje (elimina definitivamente los archivos)"
-	echo "./papelera.sh [--eliminar <direccion_archivo>]: Elimina el archivo, enviándolo a la papelera de reciclaje"
-	echo "./papelera.sh [--borrar <nombre_archivo>]: Borra un archivo de la papelera, haciendo que no se pueda recuperar"
+	echo "./papelera.sh [--eliminar \"<direccion_archivo>\"]: Elimina el archivo, enviándolo a la papelera de reciclaje"
+	echo "./papelera.sh [--borrar \"<nombre_archivo>\"]: Borra un archivo de la papelera, haciendo que no se pueda recuperar"
+	echo "Ejemplos para ejecutar el script con el set de pruebas brindado (estando posicionados en la carpeta \"Ejercicio 6\"):"
+	echo "./papelera.sh --eliminar \"files/descargas/Pepe\""
+	echo "./papelera.sh --listar"
+	echo "./papelera.sh --borrar \"Pepe\""
+	echo "./papelera.sh --recuperar \"Pepe\""
+	echo "./papelera.sh --vaciar"
 }
 
 validarPapelera() {
@@ -38,14 +44,10 @@ validarPapelera() {
 	papeleraAct="$(ls -a $dirPapelera | grep "papelera*.zip")"
 
 	# Si ya existe una papelera y es de una versión distinta a la actual, se elimina para luego crear otra
-	if [[ $papeleraAct && $papeleraAct != $nombrePapelera ]]
+	if [[ "$papeleraAct" && "$papeleraAct" != "$nombrePapelera" ]]
 	then
 		rm "$dirPapelera/$nombrePapelera"
 	fi
-}
-
-papeleraVacia() {
-	echo "Error: La papelera se encuentra vacía."
 }
 
 # Función para listar los archivos al querer recuperar/borrar
@@ -99,12 +101,12 @@ recuperarArchivo() {
 	read -r numArch
 
 	# Busca el número de archivo en la papelera con el formato /directorio1/directorio2/archivo
-	# Lo vuelvo a pasar al formato ~directorio1~directorio2~archivo para respetar el formato de la papelera
-	nombreArchZip=$(zipinfo -1 "$dirPapelera/$nombrePapelera" |  tr "~" "/" | grep "$archivo" | head -"$numArch" | tail -1 | tr "/" "~")
+	# Se vuelve a pasar al formato ~directorio1~directorio2~archivo para respetar el formato de la papelera
+	nombreArchZip="$(zipinfo -1 "$dirPapelera/$nombrePapelera" |  tr "~" "/" | grep "$archivo" | head -"$numArch" | tail -1 | tr "/" "~")"
 
 	# Busca el path del directorio padre del archivo con el formato /directorio1/directorio2
-	pathRelativo=$(echo $nombreArch | tr "~" "/")
-	pathRelativo=$(dirname "$pathRelativo")
+	pathRelativo="$(echo $nombreArch | tr "~" "/")"
+	pathRelativo="$(dirname "$pathRelativo")"
 
 	# Descomprime el archivo existente en la papelera hacia el directorio padre original
 	unzip "$dirPapelera/$nombrePapelera" "$nombreArchZip" -d "$pathRelativo">/dev/null
@@ -112,7 +114,7 @@ recuperarArchivo() {
 	zip -d "$dirPapelera/$nombrePapelera" "$nombreArchZip">/dev/null
 
 	# Renombra al archivo con su ruta original, no hace falta calcular el basename porque el comando mv lo interpreta como dirección absoluta
-	nombreArch=$(echo "$nombreArchZip" | tr "~" "/")
+	nombreArch="$(echo "$nombreArchZip" | tr "~" "/")"
 	mv "$nombreArchZip" "$nombreArch"
 
 	echo "$nombreArch fue recuperado de manera exitosa."
@@ -133,18 +135,19 @@ eliminarArchivo() {
 	fi
 
 	# Obtiene el path absoluto del archivo
-	pathCompleto=$(realpath "$archivo")
+	pathCompleto="$(realpath "$archivo")"
 
 	# A fin de evitar las ambigüedades de archivos de diferentes directorios con el mismo nombre
 	# El nombre del archivo de la papelera será ~directorio1~directorio2~archivo
 	# Obtiene el path del directorio padre del archivo
-	pathRelativo=$(dirname "$pathCompleto" | tr "/" "~")
+	pathRelativo="$(dirname "$pathCompleto" | tr "/" "~")"
 	# Obtiene el nombre del archivo sin considerar directorios para saber el nombre original y luego cambiarlo
-	nombreArchivo=$(basename "$pathCompleto")
+	nombreArchivo="$(basename "$pathCompleto")"
 	# Concatena para lograr el nombre final
 	nombreFinal="$pathRelativo~$nombreArchivo"
 
 	# Añade a la papelera de reciclaje el nuevo archivo
+	# El archivo .zip de la papelera de reciclaje se crea al eliminar el primer elemento
 	zip -mj "$dirPapelera/$nombrePapelera" "$pathCompleto">/dev/null
 
 	# Cambia el nombre del archivo al formato anteriormente descrito
@@ -167,18 +170,19 @@ borrarArchivo() {
 	echo "$nombreArch fue eliminado de manera exitosa." | tr "~" "/"
 }
 
-dirPapelera=$HOME
+dirPapelera="$HOME"
 nombrePapelera="papelera v1.0.zip"
 
 validarPapelera
 
+# A partir de la opción recibida en la línea de comandos, es la acción a realizar
 case $1 in
 	'--listar')
 		listarArchivos
 		exit
 	;;
 	'--recuperar')
-		archivo=$2
+		archivo="$2"
 		mostrarArchivosCondicion
 		recuperarArchivo
 		exit
@@ -188,12 +192,12 @@ case $1 in
 		exit
 	;;
 	'--eliminar')
-		archivo=$2
+		archivo="$2"
 		eliminarArchivo
 		exit
 	;;
 	'--borrar')
-		archivo=$2
+		archivo="$2"
 		mostrarArchivosCondicion
 		borrarArchivo
 		exit
