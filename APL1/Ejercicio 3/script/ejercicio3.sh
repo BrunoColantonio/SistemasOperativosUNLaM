@@ -35,14 +35,11 @@ ayuda(){
 	
 - compilar: concatena el contenido de todos los archivos dentro del directorio en cuestion y guarda el resultado en una carpeta 'bin' dentro del mismo.
 	
-- publicar: copia  el contenido del 'proceso de compilacion' en una carpeta especificada por el usuario - solo podra ejecutarse si se ha especificado anteriormente la accion de compilar."
-	
+- publicar: copia  el contenido del 'proceso de compilacion' en una carpeta especificada por el usuario - solo podra ejecutarse si se ha especificado anteriormente la accion de compilar.
+
 	echo " "
-	
 	echo "------------ AYUDA - FORMATO DEL SRCIPT ------------"
-
 	echo " "
-
 	echo "./ejercicio3.sh [-h / -? / --help] => Muestra ayuda"
 	echo "./ejercicio3.sh [-c path -a [listar,peso,compilar,publicar] -s path_final] => inicio"	  
 	echo "----------- AYUDA - CIERRE DEFINITIVO DEL SCRIPT ------------"
@@ -50,6 +47,11 @@ ayuda(){
 	echo "2) Tome nota de los PID de los procesos con nombre 'ejercicio3.sh' y 'inotifywait'"
 	echo "3) Ejecute el comando: kill -10 [PID_de_'ejercicio3.sh']"
 	echo "4) Ejecute el comando: kill -10 [PID_de_'inotifywait']"
+
+
+- NOTA: Es necesario, para asegurar el correcto funcionamiento del script, ejecutar los siguientes comandos:
+				         ** sudo apt update **
+				  ** sudo apt install inotify-tools **
 }
 
 function finalizar(){
@@ -104,6 +106,7 @@ function demonio(){
 
 declare -A map
 valido=false
+comandoIncorrecto=false
 dirFinIn=false
 
 if [[ "$1" == "-h" || "$1" == "--help" || "$1" == "-?" ]]
@@ -135,11 +138,11 @@ do
 					(( map[$i]++ ))
 					valido=true	
 				else
-					valido=false
+					comandoIncorrecto=true
 				fi
 			done
 
-			if [[ $valido == false ]]; then
+			if [[ $comandoIncorrecto == true ]]; then
 				echo "Comando invalido ingresado. Pruebe con ./ejercicio3.sh [-h,--help, -?]"
 				exit
 			fi
