@@ -145,8 +145,22 @@ calcularSalida(){
 	
 	if [ $cantArchivos -gt 0 ]
 	then
-		porcentajeCodigo=`bc -l <<< "scale=2; ($codigosTotales/$lineasTotales)*100"`
-		porcentajeComentarios=`bc -l <<< "scale=2; ($comentariosTotales/$lineasTotales)*100"`
+		
+		if [ $comentariosTotales -gt 0 ]
+		then
+			porcentajeComentarios=`bc -l <<< "scale=2; ($comentariosTotales/$lineasTotales)*100"`
+		else
+			porcentajeComentarios=0
+		fi
+		
+		if [ $codigosTotales -gt 0 ]
+		then
+			porcentajeCodigo=`bc -l <<< "scale=2; ($codigosTotales/$lineasTotales)*100"`
+		else
+			porcentajeCodigo=0
+		fi	
+		
+			
 		echo "-------INFORMACION SOLICITADA-------"
 		echo "Archivos totales analizados: " $cantArchivos 
 		echo "Lineas totales analizadas: " $lineasTotales
