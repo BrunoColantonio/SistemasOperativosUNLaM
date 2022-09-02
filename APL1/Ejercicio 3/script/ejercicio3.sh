@@ -159,7 +159,7 @@ do
 		;;
 		s)	
 			dFT=$(echo "$OPTARG" | tr -d "[:space:]")
-			dirFin=$(realpath "$dFT")
+			dirFin=$(realpath -m "$dFT")
 			valido=true
 			dirFinIn=true
 		;;
