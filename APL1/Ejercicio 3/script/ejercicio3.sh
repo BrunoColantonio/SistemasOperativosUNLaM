@@ -177,8 +177,11 @@ done
 
 if "$valido"; then
 	if [[ -d "$dir" && -r "$dir" ]]; then
-		demonio &
-		trap finalizar SIGUSR1
+		if [[ "$dirFinIn" == true ]]; then
+			demonio &
+			trap finalizar SIGUSR1
+		else
+			echo "No se ingreso la ruta a al directorio necesario para publicar. Pruebe ingresando ./ejercicio3.sh [-h, --help, -?]"
 	else
 		echo "$dir no es un directorio o no posee los permiso de lectura"
 		exit
