@@ -175,7 +175,7 @@ done
 
 # ------------ EJECUCION EN MODO "DEMONIO" ------------
 
-if "$valido"; then
+if [[ "$valido" == true ]]; then
 	if [[ -d "$dir" && -r "$dir" ]]; then
 		if [[ "$dirFinIn" == true ]]; then
 			demonio &
