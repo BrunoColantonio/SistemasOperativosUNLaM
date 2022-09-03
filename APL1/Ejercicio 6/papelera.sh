@@ -72,6 +72,8 @@ mostrarArchivosCondicion() {
 		print
 		(( i++ ))
 	}'
+	
+	cantArch=$(zipinfo -1 "$dirPapelera/$nombrePapelera" |  tr "~" "/" | grep "$archivo" | wc -l)
 }
 
 listarArchivos() {
@@ -99,6 +101,13 @@ recuperarArchivo() {
 	# Ingreso de número de archivo que se desea recuperar para evitar ambigüedades
 	echo -n "¿Qué archivo desea recuperar? "
 	read -r numArch
+
+	# Verifica que el número seleccionado exista (mayor a 1 y menor/igual a la cantidad de archivos)
+	if [[ $numArch -gt $cantArch  || $numArch -lt 1 ]]
+	then
+		echo "Error: El número de archivo seleccionado no existe."
+		exit 1
+	fi
 
 	# Busca el número de archivo en la papelera con el formato /directorio1/directorio2/archivo
 	# Se vuelve a pasar al formato ~directorio1~directorio2~archivo para respetar el formato de la papelera
@@ -161,6 +170,13 @@ borrarArchivo() {
 	echo -n "¿Qué archivo desea borrar definitivamente? "
 	read -r numArch
 	
+	# Verifica que el número seleccionado exista (mayor a 1 y menor/igual a la cantidad de archivos)
+	if [[ $numArch -gt $cantArch  || $numArch -lt 1 ]]
+	then
+		echo "Error: El número de archivo seleccionado no existe."
+		exit 1
+	fi
+
 	# Busca el nombre del archivo con el número ingresado
 	nombreArch=$(zipinfo -1 "$dirPapelera/$nombrePapelera" |  tr "~" "/" | grep "$archivo" | head -"$numArch" | tail -1 | tr "/" "~")
 	

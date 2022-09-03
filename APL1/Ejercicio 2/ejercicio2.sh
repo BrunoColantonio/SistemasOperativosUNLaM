@@ -32,7 +32,7 @@ ayuda() {
 	echo "./ejercicio2.sh [-h / -? / --help]: Muestra la ayuda"
 	echo "./ejercicio2.sh [--logs]: Realiza los cálculos anteriormente realizados sobre el directorio actual"
 	echo "./ejercicio2.sh [--logs \"<direccion_directorio>\"]: Realiza los cálculos anteriormente mencionados en el directorio cuya ubicación es ubicacion_directorio"
-	echo "Ejemplo para ejecutar el script con el set de pruebas brindado (estando posicionados en la carpeta \"Ejercicio 2\"): ./ejercicio.sh --logs \"logs\""
+	echo "Ejemplo para ejecutar el script con el set de pruebas brindado (estando posicionados en la carpeta \"Ejercicio 2\"): ./ejercicio2.sh --logs \"logs\""
 }
 
 validarDirectorio() {
