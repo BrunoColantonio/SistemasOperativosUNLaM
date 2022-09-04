@@ -2,9 +2,9 @@
 
 # -------------------------- ENCABEZADO --------------------------
 
-# Nombre del script: ejercicio3.sh
+# Nombre del script: ejercicio5.sh
 # Número de APL: 1
-# Número de ejercicio: 3
+# Número de ejercicio: 5
 # Número de entrega: Entrega
 
 # ---------------- INTEGRANTES DEL GRUPO ----------------
@@ -29,7 +29,8 @@ ayuda() {
     echo "y que abandonaron la materia (sin nota en algun parcial y sin recuperatorio)"
     echo "---------------- AYUDA - FORMATO DEL SCRIPT ----------------"
     echo "./ejercicio5.sh [-h / -? / --help]: Muestra la ayuda"
-    echo "./ejercicio5.sh [--notas <nombre_arch_notas> --materias <nombre_arch_materias>]: Realiza los cálculos anteriormente realizados sobre los archivos enviados"
+    echo "./ejercicio5.sh [--notas \"<nombre_arch_notas>\" --materias \"<nombre_arch_materias>\"]: Realiza los cálculos anteriormente realizados sobre los archivos enviados"
+    echo "Ejemplos para ejecutar el script con el set de pruebas brindado (estando posicionados en la carpeta \"Ejercicio 5\"): ./ejercicio5.sh --notas \"notas.txt\" --materias \"materias.txt\""
     return 0
 }
 
@@ -90,45 +91,34 @@ calcularSalida() {
                                 (( cantAband[$id]++ ))
     
                 #procesamos recursantes
-                        elif [[  "$final" == ""  ]] 
+                        elif [[  "$final" == "" || "$final" -lt 4 ]]
                             then
                                 (( cantRecu[$id]++ ))
                     fi
         fi
 
     done < "$notas"
-
-    
-    
-    echo "Promocionan: " "${cantProm[*]}"
-    echo "A Final: " "${cantFinal[*]}"
-    echo "Recursan: " "${cantRecu[*]}"
-    echo "Abandonan: " "${cantAband[*]}"
 	
-	for idMateria in ${!arr_depto[*]}
-    do
-    	if ! [ ${cantFinal[$idMateria]} ]
-    	then
-    		cantFinal[$idMateria]=0
-    	fi
-    	if ! [ ${cantRecu[$idMateria]} ]
-    	then
-    		cantRecu[$idMateria]=0
-    	fi
-    	if ! [ ${cantAband[$idMateria]} ]
-    	then
-    		cantAband[$idMateria]=0
-    	fi
-    	if ! [ ${cantProm[$idMateria]} ]
-    	then
-    		cantProm[$idMateria]=0
-    	fi
-    	
-    done
+    for idMateria in ${!arr_depto[*]}
+	   do
+	    if ! [ ${cantFinal[$idMateria]} ]
+	    then
+	    	cantFinal[$idMateria]=0
+	    fi
+	    if ! [ ${cantRecu[$idMateria]} ]
+	    then
+	    	cantRecu[$idMateria]=0
+	    fi
+	    if ! [ ${cantAband[$idMateria]} ]
+	    then
+	    	cantAband[$idMateria]=0
+	    fi
+	    if ! [ ${cantProm[$idMateria]} ]
+	    then
+	    	cantProm[$idMateria]=0
+	    fi
+   done
 	
-	
-	
-    
     #idMateria  ---> ID DE LA MATERIA
     #arr_depto[$idMateria] ---> NUMERO DE DEPTO
     for idMateria in ${!arr_depto[*]}
@@ -141,8 +131,7 @@ calcularSalida() {
     flag=1
     ((lastIdDepto=lastIdDepto-1))
     
-    string="[
-    {
+    string="{
     \"departamentos\":["
     
     for idMateria in ${!arr_depto[*]}
@@ -183,10 +172,10 @@ calcularSalida() {
     	fi
     done
     
-    string+="]}]}]"
+    string+="]}]}"
     
     echo "${string}" | jq '.'
-} 
+} > "salida.json"
 
 if [[  "$1" == "--notas" && "$3" == "--materias"  ]]
     then
