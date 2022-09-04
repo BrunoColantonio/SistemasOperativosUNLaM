@@ -46,8 +46,10 @@ ayuda(){
 	echo " "
 
 	echo "./ejercicio3.sh [-h / -? / --help] => Muestra ayuda"
-	echo "./ejercicio3.sh [-c path -a [listar,peso,compilar,publicar] -s path_final] => inicio"	  
+	echo "./ejercicio3.sh [-c <path> -a [listar,peso,compilar,publicar] -s <path_final>] => inicio"	  
+	
 	echo "----------- AYUDA - CIERRE DEFINITIVO DEL SCRIPT ------------"
+	
 	echo "1) Para cerrar definitivamente el script, ingrese el comnado ps"
 	echo "2) Tome nota de los PID de los procesos con nombre 'ejercicio3.sh' y 'inotifywait'"
 	echo "3) Ejecute el comando: kill -10 [PID_de_'ejercicio3.sh']"
