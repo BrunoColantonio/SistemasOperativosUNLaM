@@ -40,7 +40,9 @@ ayuda(){
 	echo " "
 	
 	echo "------------ AYUDA - FORMATO DEL SRCIPT ------------"
-
+	echo "**Para asegurar el correcto funcionamiento del script, es necesario que antes ejecute los siguientes comandos**"
+	echo "I)  sudo apt update"
+	echo "II) sudo apt install inotify-tools"
 	echo " "
 
 	echo "./ejercicio3.sh [-h / -? / --help] => Muestra ayuda"
@@ -200,8 +202,8 @@ if [[ "$valido" == true ]]; then
 	
 		# Se ejecuta la funcion "demonio" en segundo plano.
 		# Asi, se da la ilusion de un script demonio.
-	       	# Este script no es un demonio, ya que si bien corre en segundo plano,
-		# despliega informacion por stdout.	
+	       	# Cabe aclarar que este script no es un demonio 100%, ya que si bien corre en segundo plano,
+		# informa por stdout.	
 		demonio &
 		trap finalizar SIGUSR1
 	else
