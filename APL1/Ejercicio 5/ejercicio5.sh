@@ -1,5 +1,23 @@
 #!/bin/bash
 
+# -------------------------- ENCABEZADO --------------------------
+
+# Nombre del script: ejercicio3.sh
+# Número de APL: 1
+# Número de ejercicio: 3
+# Número de entrega: Entrega
+
+# ---------------- INTEGRANTES DEL GRUPO ----------------
+
+#       Apellido, Nombre          | DNI
+#       Agostino, Matías          | 43861796
+#       Colantonio, Bruno Ignacio | 43863195
+#       Fernández, Rocío Belén    | 43875244
+#       Galo, Santiago Ezequiel   | 43473506
+#       Panigazzi, Agustín Fabián | 43744593
+
+# -------------------- FIN DE ENCABEZADO --------------------
+
 # FUNCIÓN DE AYUDA
 
 ayuda() {
@@ -183,3 +201,5 @@ else
     echo "Error de sintaxis en la entrada."
     ayuda
 fi
+
+# -------------------- FIN DE ARCHIVO --------------------

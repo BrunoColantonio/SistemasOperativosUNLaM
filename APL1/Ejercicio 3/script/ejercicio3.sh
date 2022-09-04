@@ -35,11 +35,14 @@ ayuda(){
 	
 - compilar: concatena el contenido de todos los archivos dentro del directorio en cuestion y guarda el resultado en una carpeta 'bin' dentro del mismo.
 	
-- publicar: copia  el contenido del 'proceso de compilacion' en una carpeta especificada por el usuario - solo podra ejecutarse si se ha especificado anteriormente la accion de compilar.
+- publicar: copia  el contenido del 'proceso de compilacion' en una carpeta especificada por el usuario - solo podra ejecutarse si se ha especificado anteriormente la accion de compilar."
+	
+	echo " "
+	
+	echo "------------ AYUDA - FORMATO DEL SRCIPT ------------"
 
 	echo " "
-	echo "------------ AYUDA - FORMATO DEL SRCIPT ------------"
-	echo " "
+
 	echo "./ejercicio3.sh [-h / -? / --help] => Muestra ayuda"
 	echo "./ejercicio3.sh [-c path -a [listar,peso,compilar,publicar] -s path_final] => inicio"	  
 	echo "----------- AYUDA - CIERRE DEFINITIVO DEL SCRIPT ------------"
@@ -47,11 +50,6 @@ ayuda(){
 	echo "2) Tome nota de los PID de los procesos con nombre 'ejercicio3.sh' y 'inotifywait'"
 	echo "3) Ejecute el comando: kill -10 [PID_de_'ejercicio3.sh']"
 	echo "4) Ejecute el comando: kill -10 [PID_de_'inotifywait']"
-
-
-- NOTA: Es necesario, para asegurar el correcto funcionamiento del script, ejecutar los siguientes comandos:
-				         ** sudo apt update **
-				  ** sudo apt install inotify-tools **
 }
 
 function finalizar(){
@@ -60,40 +58,51 @@ function finalizar(){
 }
 
 function demonio(){
-
+	
+	# Mientras inotifywait este detectando un "cambio" en algun archivo del directorio
+	# dir, se ejecuta el siguiente codigo.
 	while out=$(inotifywait -e modify,create,delete,move -r -q --format "%w%f" "$dir")
 	do
 
+		# Se verifica que se haya especificado la accion "listar" para ejecutarse cuando 
+		# se detecte un cambio.
 		if [[ ${map["listar"]} -eq 1 ]]; then
 			echo "Archivo modificado"
 			echo "$out"
 			echo " "
 		fi
-
+		
+		# Lo mismo que para "listar".
 		if [[ ${map["peso"]} -eq 1 ]]; then
 			echo "Peso"
 			echo $(du -sh $out)
 			echo " "
 		fi
-
+		
+		# Aqui, ademas de verificar que se haya especificado esta accion, se verifica que
+		# el directorio "$dir/bin" exista. Si no existe, lo crea.
 		if [[ ${map["compilar"]} -eq 1 ]]; then
 			echo "Compilando..."
+			
+			# Si el directorio existe, no lo crea. Si no existe, lo crea.
+			mkdir -p "$dir/bin"
 
-			mkdir -p "$dir/bin" 
+			# Se recorren todos los archivos del directorio y se los concatena
+			# en un archivo llamado "merged", dentro del directorio "$dir/bin"
 			find $dir -type f -exec cat {} + > "$dir/bin/merged"
 			
 			echo " "
 		fi
-
+		
+		# Aqui, ocurre algo similar. Luego, se copia el archivo "merged" a el directorio
+		# especificado.
 		if [[ ${map["publicar"]} -eq 1 ]]; then
 			echo "Publicando..."
-
-			if [[ $dirFinIn == false ]]; then
-				"No se ingreso el path del directorio de destino. Pruebe con ./ejercicio3.sh [-h, --help, -?]"
-				exit
-			fi
 			
+			# Si el directorio existe, no lo crea. Si no existe, lo crea.
 			mkdir -p "$dirFin"
+			
+			# Copia el contenido del arhcivo "merged" al directorio destino.
 			cp "$dir/bin/merged" "$dirFin"				
 			
 			echo "[Publicado]"
@@ -118,9 +127,9 @@ fi
 while getopts "c:a:s:" opcion
 do
 	case $opcion in
-		c)
-			dT=$(echo "$OPTARG" | tr -d "[:space:]")
-			dir=$(realpath "$dT")
+		c)	# Comando para soportar lineas de la forma dir1/  dir2"
+			# dT=$(echo "$OPTARG" | tr -d "[:space:]")
+			dir=$(realpath "$OPTARG")
 			valido=true
 		;;
 		a)	auxIFS=$IFS
@@ -160,9 +169,10 @@ do
 				fi
 			done
 		;;
-		s)	
-			dFT=$(echo "$OPTARG" | tr -d "[:space:]")
-			dirFin=$(realpath -m "$dFT")
+		s)	# Comando para soportar lineas de la forma dir1/  dir2"
+			# dFT=$(echo "$OPTARG" | tr -d "[:space:]")
+			dirFin=$(realpath -m "$OPTARG")
+			echo "$dirFin"
 			valido=true
 			dirFinIn=true
 		;;
@@ -175,13 +185,25 @@ done
 
 # ------------ EJECUCION EN MODO "DEMONIO" ------------
 
+# Se verifica que se hayan ingresado parametros validos.
 if [[ "$valido" == true ]]; then
+	
+	# Se verifica que el directorio exista y tenga los permisos de lectura.
 	if [[ -d "$dir" && -r "$dir" ]]; then
-		if [[ "$dirFinIn" == true ]]; then
-			demonio &
-			trap finalizar SIGUSR1
-		else
-			echo "No se ingreso la ruta al directorio necesario para publicar. Pruebe ingresando ./ejercicio3.sh [-h, --help, -?]"
+
+		# Se verifica que el directorio a destino exista, si la accion publicar fue
+		# especificada.
+		if [[ ${map["publicar"]} -eq 1 &&  "$dirFinIn" == false ]]; then
+			echo "No se ingreso la ruta a destino necesaria para ejecutar la accion de publicar. Pruebe ingresando ./ejercicio3.sh [-h, --help, -?]"
+                	exit
+		fi
+	
+		# Se ejecuta la funcion "demonio" en segundo plano.
+		# Asi, se da la ilusion de un script demonio.
+	       	# Este script no es un demonio, ya que si bien corre en segundo plano,
+		# despliega informacion por stdout.	
+		demonio &
+		trap finalizar SIGUSR1
 	else
 		echo "$dir no es un directorio o no posee los permiso de lectura"
 		exit
@@ -190,3 +212,5 @@ else
 	echo "No se ingresaron parametros validos. Pruebe ingresando ./ejercicio3.sh [-h, --help, -?]"
 	exit
 fi
+
+# -------------------- FIN DE ARCHIVO --------------------
