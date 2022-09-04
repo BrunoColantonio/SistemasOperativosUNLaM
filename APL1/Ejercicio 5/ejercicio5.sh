@@ -27,11 +27,15 @@ ayuda() {
     echo "(sin final y con ambos parciales/recuperatorio con nota mayor o igual a 4),"
     echo "que recursaran (nota menor a 4 en final o en parciales y/o recuperatorios),"
     echo "y que abandonaron la materia (sin nota en algun parcial y sin recuperatorio)"
+    echo "La salida del script será en formato de documento JSON (\"salida.json\") en el directorio donde se encuentre posicionado el usuario al ejecutar el script."
     echo "---------------- AYUDA - FORMATO DEL SCRIPT ----------------"
     echo "./ejercicio5.sh [-h / -? / --help]: Muestra la ayuda"
-    echo "./ejercicio5.sh [--notas \"<nombre_arch_notas>\" --materias \"<nombre_arch_materias>\"]: Realiza los cálculos anteriormente realizados sobre los archivos enviados"
-    echo "Ejemplos para ejecutar el script con el set de pruebas brindado (estando posicionados en la carpeta \"Ejercicio 5\"): ./ejercicio5.sh --notas \"notas.txt\" --materias \"materias.txt\""
-    echo "---------------- AYUDA - ACLARACION ----------------"
+    echo "./ejercicio5.sh [--notas \"<nombre_arch_notas>\" --materias \"<nombre_arch_materias>\"]: Realiza los cálculos anteriormente mencionados sobre los archivos enviados"
+    echo "Ejemplos para ejecutar el script con el set de pruebas brindado (estando posicionados en la carpeta \"Ejercicio 5\"):"
+    echo "./ejercicio5.sh --notas \"notas.txt\" --materias \"materias.txt\""
+    echo "./ejercicio5.sh --notas \"notas2.txt\" --materias \"materias2.txt\""
+    echo "./ejercicio5.sh --notas \"notas3.txt\" --materias \"materias3.txt\""
+    echo "--------------------- AYUDA - ACLARACIÓN ---------------------"
     echo "Para correr el script es necesario descargar la funcion jq ((comando: sudo apt install jq))"
     return 0
 }
