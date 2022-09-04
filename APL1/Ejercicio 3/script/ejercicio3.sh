@@ -94,7 +94,7 @@ function demonio(){
 			echo " "
 		fi
 		
-		# Aqui, ocurre algo similar. Luego, se copia el archivo "merged" a el directorio
+		# Aqui, ocurre algo similar. Luego, se copia el archivo "merged" al directorio
 		# especificado.
 		if [[ ${map["publicar"]} -eq 1 ]]; then
 			echo "Publicando..."
