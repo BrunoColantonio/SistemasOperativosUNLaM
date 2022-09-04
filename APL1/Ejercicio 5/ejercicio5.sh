@@ -31,6 +31,8 @@ ayuda() {
     echo "./ejercicio5.sh [-h / -? / --help]: Muestra la ayuda"
     echo "./ejercicio5.sh [--notas \"<nombre_arch_notas>\" --materias \"<nombre_arch_materias>\"]: Realiza los cálculos anteriormente realizados sobre los archivos enviados"
     echo "Ejemplos para ejecutar el script con el set de pruebas brindado (estando posicionados en la carpeta \"Ejercicio 5\"): ./ejercicio5.sh --notas \"notas.txt\" --materias \"materias.txt\""
+    echo "---------------- AYUDA - ACLARACION ----------------"
+    echo "Para correr el script es necesario descargar la funcion jq ((comando: sudo apt install jq))"
     return 0
 }
 
@@ -174,8 +176,11 @@ calcularSalida() {
     
     string+="]}]}"
     
-    echo "${string}" | jq '.'
+
+	
+   echo "${string}" | jq '.'
 } > "salida.json"
+
 
 if [[  "$1" == "--notas" && "$3" == "--materias"  ]]
     then
