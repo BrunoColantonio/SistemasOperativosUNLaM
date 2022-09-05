@@ -156,7 +156,13 @@ do
 					comandoIncorrecto=true
 				fi
 			done
-
+			
+			# Se verifica que se hayan ingresado acciones a realizar.
+                	if [[ cantAcciones -eq 0 ]]; then
+                        	echo "No se han ingresado acciones a realizar. Pruebe ingresando ./ejercicio3.sh [-h, --help, -?]"
+                        	exit
+                	fi
+			
 			if [[ $comandoIncorrecto == true ]]; then
 				echo "Comando invalido ingresado. Pruebe con ./ejercicio3.sh [-h,--help, -?]"
 				exit
@@ -196,13 +202,7 @@ if [[ "$valido" == true ]]; then
 	
 	# Se verifica que el directorio exista y tenga los permisos de lectura.
 	if [[ -d "$dir" && -r "$dir" ]]; then
-
-		# Se verifica que se hayan ingresado acciones a realizar.ghp_85J
-                if [[ cantAcciones -eq 0 ]]; then
-                        echo "No se han ingresado acciones a realizar. Pruebe ingresando ./ejercicio3.sh [-h, --help, -?]"
-                        exit
-                fi
-		
+	
 		# Se verifica que el directorio a destino exista, si la accion publicar fue
 		# especificada.
 		if [[ ${map["publicar"]} -eq 1 &&  "$dirFinIn" == false ]]; then
