@@ -119,6 +119,7 @@ function demonio(){
 
 declare -A map
 valido=false
+cantAcciones=0
 comandoIncorrecto=false
 dirFinIn=false
 
@@ -149,7 +150,8 @@ do
 				if [[ $i == "listar" || $i == "peso" || $i == "compilar" || 
 			      	      $i == "publicar" ]]; then
 					(( map[$i]++ ))
-					valido=true	
+					valido=true
+					(( cantAcciones++ ))	
 				else
 					comandoIncorrecto=true
 				fi
@@ -195,13 +197,19 @@ if [[ "$valido" == true ]]; then
 	# Se verifica que el directorio exista y tenga los permisos de lectura.
 	if [[ -d "$dir" && -r "$dir" ]]; then
 
+		# Se verifica que se hayan ingresado acciones a realizar.ghp_85J
+                if [[ cantAcciones -eq 0 ]]; then
+                        echo "No se han ingresado acciones a realizar. Pruebe ingresando ./ejercicio3.sh [-h, --help, -?]"
+                        exit
+                fi
+		
 		# Se verifica que el directorio a destino exista, si la accion publicar fue
 		# especificada.
 		if [[ ${map["publicar"]} -eq 1 &&  "$dirFinIn" == false ]]; then
 			echo "No se ingreso la ruta a destino necesaria para ejecutar la accion de publicar. Pruebe ingresando ./ejercicio3.sh [-h, --help, -?]"
                 	exit
 		fi
-	
+
 		# Se ejecuta la funcion "demonio" en segundo plano.
 		# Asi, se da la ilusion de un script demonio.
 	       	# Cabe aclarar que este script no es un demonio 100%, ya que si bien corre en segundo plano,
