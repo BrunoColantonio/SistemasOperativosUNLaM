@@ -2,18 +2,18 @@
 -------------------------- ENCABEZADO --------------------------
 
 Nombre del script: ejercicio4.ps1
-N√∫mero de APL: 2
-N√∫mero de ejercicio: 4
-N√∫mero de entrega: Entrega
+N˙mero de APL: 2
+N˙mero de ejercicio: 4
+N˙mero de entrega: Entrega
 
 ---------------- INTEGRANTES DEL GRUPO ----------------
 
 Apellido, Nombre          | DNI
-Agostino, Mat√≠as          | 43861796
+Agostino, MatÌas          | 43861796
 Colantonio, Bruno Ignacio | 43863195
-Fern√°ndez, Roc√≠o Bel√©n    | 43875244
+Fern·ndez, RocÌo BelÈn    | 43875244
 Galo, Santiago Ezequiel   | 43473506
-Panigazzi, Agust√≠n Fabi√°n | 43744593
+Panigazzi, AgustÌn Fabi·n | 43744593
 
 -------------------- FIN DE ENCABEZADO --------------------
 #>
@@ -27,7 +27,7 @@ Panigazzi, Agust√≠n Fabi√°n | 43744593
     El script cuenta con dos parametros obligatorios:
     La ruta, en la cual se le indica la direccion de los archivos a analizar.
     Las extensiones, en donde se le indica las extensiones de los archivos a analizar. 
-    Solo tendr√° en cuenta archivos con esas extensiones.
+    Solo tendr· en cuenta archivos con esas extensiones.
     Las extensiones deben estar pasadas separadas por coma como se muestra en los ejemplos.
     En caso de no proporcionarlas correctamente se pedira que las ingrese una por una, finalizando con un doble enter.
 

@@ -1,8 +1,8 @@
 <#
 -------------------------- ENCABEZADO --------------------------
-Nombre del script: ejercicio1.ps1
+Nombre del script: ejercicio3.ps1
 Número de APL: 2
-Número de ejercicio: 1
+Número de ejercicio: 3
 Número de entrega: Entrega
 ---------------- INTEGRANTES DEL GRUPO ----------------
 Apellido, Nombre          | DNI

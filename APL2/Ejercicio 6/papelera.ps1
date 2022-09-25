@@ -1,9 +1,9 @@
 ﻿<#
 -------------------------- ENCABEZADO --------------------------
 
-Nombre del script: ejercicio1.ps1
+Nombre del script: papelera.ps1
 Número de APL: 2
-Número de ejercicio: 1
+Número de ejercicio: 6
 Número de entrega: Entrega
 
 ---------------- INTEGRANTES DEL GRUPO ----------------
@@ -135,7 +135,6 @@ function Listar-Papelera([String]$dirPapelera) {
             exit
         }
         
-        Write-Host $_ "Oi"
         # Creación de una expresión regular
         [regex]$pattern = "~"
         # La expresión regular permite reemplazar la primera ocurrencia de "~" para reemplazarla por ":" y comenzar a obtener el path original
@@ -155,7 +154,7 @@ function Listar-Papelera([String]$dirPapelera) {
 
 function Recuperar-Archivo([String]$dirPapelera, [String]$nomArchivo, [int]$cantArchivos) {
     $numArchivo = Read-Host "¿Qué archivo desea recuperar?"
-    if( $numArchivo -gt $cantArchivos )
+    if( ( $numArchivo -gt $cantArchivos ) -or ( $numArchivo -lt 1 ) )
     {
         Write-Host "Error: El número de archivo seleccionado no existe."
         exit
@@ -213,23 +212,26 @@ function Eliminar-Archivo([String]$dirPapelera, [String]$dirArchivo) {
     $newNomArch = $dirArchivo.Replace('\','~')
     $newNomArch = $newNomArch.Replace(':','~')
 
-    # Obtiene la nueva dirección del archivo a llevar a la papelera de reciclaje
-    $newDirArch = Split-Path -Path $dirArchivo
-    $newDirArch = "$newDirArch\$newNomArch"
-    # Renombramos el archivo con su dirección absoluta
-    Rename-Item -Path $dirArchivo -NewName $newNomArch
+    # Abre la papelera de reciclaje en modo update
+    $papelera = [System.IO.Compression.ZipFile]::Open($dirPapelera, 'update')
+
+    # Definimos el nivel de compresión del archivo
+    $compressionLevel = [System.IO.Compression.CompressionLevel]::Fastest
 
     # Envía el archivo a la papelera de reciclaje
-    Compress-Archive -Path $newDirArch -DestinationPath $dirPapelera -Update
+    [System.IO.Compression.ZipFileExtensions]::CreateEntryFromFile($papelera, $dirArchivo, $newNomArch, $compressionLevel)> $null
+
     # Elimina el archivo de su ubicación original
-	Remove-Item -Path $newDirArch
+	Remove-Item -Path $dirArchivo
 
     Write-Host "$dirArchivo enviado a la papelera de manera exitosa."
+
+    $papelera.Dispose()
 }
 
 function Borrar-Archivo([String]$dirPapelera, [String]$nomArchivo, [int]$cantArchivos) {
 	$numArchivo = Read-Host "¿Qué archivo desea borrar definitivamente?"
-    if( $numArchivo -gt $cantArchivos )
+    ( ( $numArchivo -gt $cantArchivos ) -or ( $numArchivo -lt 1 ) )
     {
         Write-Host "Error: El número de archivo seleccionado no existe."
         exit

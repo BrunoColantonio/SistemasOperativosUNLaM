@@ -1,19 +1,19 @@
 ﻿<#
 -------------------------- ENCABEZADO --------------------------
 
-Nombre del script: ejercicio5.ps1
-NÃºmero de APL: 2
-NÃºmero de ejercicio: 5
-NÃºmero de entrega: Entrega
+Nombre del script: Ejercicio5.ps1
+Número de APL: 2
+Número de ejercicio: 5
+Número de entrega: Entrega
 
 ---------------- INTEGRANTES DEL GRUPO ----------------
 
 Apellido, Nombre          | DNI
-Agostino, MatÃ­as          | 43861796
+Agostino, Matías          | 43861796
 Colantonio, Bruno Ignacio | 43863195
-FernÃ¡ndez, RocÃ­o BelÃ©n    | 43875244
+Fernández, Rocío Belén    | 43875244
 Galo, Santiago Ezequiel   | 43473506
-Panigazzi, AgustÃ­n FabiÃ¡n | 43744593
+Panigazzi, Agustín Fabián | 43744593
 
 -------------------- FIN DE ENCABEZADO --------------------
 #>
