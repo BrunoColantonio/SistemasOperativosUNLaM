@@ -1,0 +1,28 @@
+Param (
+ [Parameter(Position = 1, Mandatory = $false)]
+ [String] $pathSalida = ".\procesos.txt ",
+ [int] $cantidad = 3
+)
+$existe = Test-Path $pathSalida
+if ($existe -eq $true) {
+ $procesos = Get-Process | Where-Object { $_.WorkingSet -gt 100MB }
+
+ $procesos | Format-List -Property Id,Name >> $pathSalida
+
+ for ($i = 0; $i -lt $cantidad ; $i++) {
+ Write-Host $procesos[$i].Id - $procesos[$i].Name
+ }
+} else {
+ Write-Host "El path no existe"
+}
+
+Responder:
+1. ¿Cuál es el objetivo del script?
+
+2. ¿Agregaría alguna otra validación a los parámetros?
+
+3. ¿Qué sucede si se ejecuta el script sin ningún parámetro?
+
+1. El objetivo del script es guardar los Id y nombres de los procesos de mas de 100 MB en un archivo cuyo path fue ingresado por parámetro (en caso contrario, toma su valor por default. Siempre verificando que exista dicho path), y luego, lista por pantalla los mismos datos.
+2. Si. Agregaríamos una validación sobre la cantidad de procesos a listar. La cantidad nunca puede ser negativa. (Podría pedirse que siempre sea positiva mayor a 0, ya que no tiene sentido ejecutar el script para listar 0 procesos).
+3. Los parámetros tienen valores por default. Así que en caso de no ingresarlos, el script utiliza los ya establecidos.
