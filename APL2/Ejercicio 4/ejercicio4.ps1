@@ -3,7 +3,7 @@
 
 Nombre del script: ejercicio4.ps1
 Número de APL: 2
-Número de ejercicio: 1
+Número de ejercicio: 4
 Número de entrega: Entrega
 
 ---------------- INTEGRANTES DEL GRUPO ----------------
@@ -47,6 +47,13 @@ Param (
     [Parameter(Position = 2, Mandatory = $true)]
     [String[]] $ext
 )
+
+function validarDirectorio(){
+    if(!(Test-Path $ruta)){
+        Write-Host "---�EL DIRECTORIO INDICADO NO EXISTE!---"
+        exit
+    }
+}
 
 function calcularComentariosMultilinea([ref]$comentarios, [ref]$codigos, [string]$linea, [ref]$multilineaActivada, [boolean]$dobleTipoDeComentario){
     #Ejemplo: ALGO /* ALGO */ ALGO
@@ -198,5 +205,6 @@ function calcularSalida(){
     
 }
 
+validarDirectorio
 calcularSalida
 # -------------------- FIN DE ARCHIVO --------------------

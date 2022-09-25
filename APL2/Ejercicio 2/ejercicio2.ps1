@@ -1,8 +1,8 @@
 ﻿<#
 -------------------------- ENCABEZADO --------------------------
-Nombre del script: ejercicio4.ps1
+Nombre del script: ejercicio2.ps1
 Número de APL: 2
-Número de ejercicio: 1
+Número de ejercicio: 2
 Número de entrega: Entrega
 ---------------- INTEGRANTES DEL GRUPO ----------------
 Apellido, Nombre          | DNI
@@ -37,7 +37,7 @@ Param (
 
 function validarDirectorio(){
     if(!(Test-Path $logs)){
-        Write-Host "---¡EL DIRECTORIO INDICADO NO ES VALIDO!---" -ForegroundColor Red
+        Write-Host "---¡EL DIRECTORIO INDICADO NO EXISTE!---" -ForegroundColor Red
         exit
     }
 }

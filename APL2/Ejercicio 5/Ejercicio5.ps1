@@ -176,122 +176,46 @@ foreach($elemento in $ids){
     }
 }
 
-
-<#
-$deptos = $departamento.Values
-$ids = $idMateria.Keys
-
-foreach($id in $ids){
-    $lastIdMateria = $id
-    [int]$lastIdDepto = $departamento[$id]
-}
-
-$ultimoDepto = 0
-$flag = 0
-$lastIdDepto--
-
-
-
-$salida = @"
-{
-    'departamentos':["
-
-"@
-
-
-foreach($id in $ids){
-    if(!($id -eq 0)){
-        if(!($ultimoDepto -eq $departamento[$id])){
-            #Hacemos el cierre de etiqueta
-            #Si no es el primer depto
-            if(!($ultimoDepto -eq 0)){
-               #Si es el ante ultimo depto pone la coma
-               if(!($departamento[$id] -eq $lastIdDepto)){
-                    $salida += "]},"
-               }
-               else{
-                   $salida += "]}"
-               }
-            }
-            #realizamos el string de inicio
-            $salida += "{ 'id'"
-            $salida += $departamento[$id]
-            $salida += ", 'notas': ["
-            $ultimoDepto = $departamento[$id]
-        }
-        else{
-           $salida += ","
-        }
-    }
-
-    #realizamos la conversion
-
-    $salida += "{
-       'id_materia':"
-    $salida += $id
-    $salida += ",
-    'descripcion':"
-    $salida += $departamento[$id]
-    $salida += "
-    'final':"
-    $salida += $final[$id]
-    $salida += ",
-    'recursan':"
-    $salida += $recursa[$id]
-    $salida += "
-    'abandonaron':"
-    $salida += $abandono[$id]
-    $salida += ",
-    'promocionaron':"
-    $salida += $promocionados[$id]
-    $salida += "
-    }"
- 
-}
-
-$salida += "]}]}"
-
-#>
-
-
-$salida = @()
-
 #Obtengo todos los numeros de departamento
 $deptos = $departamento.Values | sort -Unique
 #Obtengo todos los ids de las materias
 $ids = $idMateria.Keys | sort
 
+$arrayDeptos = @()
 
 foreach($depto_index in $deptos){
 
+     #$salida+= "departamento: = $depto_index"
 
-     $salida+= "departamento: = $depto_index"
- 
+     $contenidoDepto = @()
+     $contenidoDepto = @{"id" = $depto_index}
 
+     $notasPorDepto = @()
      foreach($id_index in $ids){
-        
+      
+        #Si el depto de la materia es igual al depto actual
         if($idMateria[$id_index] -eq $depto_index){
-    
-        $salida+= New-Object PsObject -Property ([ordered] @{
-        
-        
-        
-            'idMateria' = $id_index
-            'descripcion' = $descripcion[$id_index]
-            'promocionados' = $promocionados[$id_index]
-            'final' = $final[$id_index]
-            'recursaron' = $recursa[$id_index]
-            'abandonaron' = $abandono[$id_index]
-    
-       
-        })
+
+            $notasPorDepto += [ordered]@{
+                'idMateria' = $id_index
+                'descripcion' = $descripcion[$id_index]
+                'final' = $final[$id_index]
+                'recursaron' = $recursa[$id_index]
+                'abandonaron' = $abandono[$id_index]
+                'promocionados' = $promocionados[$id_index]
+                }
        }
+       
     }
 
+    $contenidoDepto += @{"notas" = $notasPorDepto}
+    $arrayDeptos += $contenidoDepto
 }
 
-$salida | ConvertTo-Json 
+$final = @{"departamentos" = $arrayDeptos}
 
-$salida | ConvertTo-Json | Out-File salida.json
+$final | ConvertTo-Json -depth 10
+
+$final | ConvertTo-Json -depth 10 | Out-File salida.json
 
 # -------------------- FIN DE ARCHIVO --------------------
