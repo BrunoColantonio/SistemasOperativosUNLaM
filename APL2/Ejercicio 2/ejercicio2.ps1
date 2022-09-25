@@ -312,9 +312,9 @@ else{
 
 $promedioTiempoDia /= $cantLlamadasDia
 
-for( $k=0; $k -lt $contenidoAux.Length; $k+=2){
+for( $k=0; $k -lt $contenido.Length; $k+=2){
 
-    $fechaAux_ = $contenidoAux[$k].Split(" ")
+    $fechaAux_ = $contenido[$k].Split(" ")
     $fechaAux2 = $fechaAux_[0]
 
     if($fechaAux2 -eq $fecha){
