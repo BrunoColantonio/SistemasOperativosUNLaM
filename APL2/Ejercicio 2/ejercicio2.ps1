@@ -128,8 +128,10 @@ $files = Get-ChildItem -Path $logs | Select-Object -ExpandProperty FullName
 
 foreach($elemento in $files){
 
+#Proceso solo archivos dentro del directorio (si es un sub-directorio, no lo tengo en cuenta)
 if(!((Get-Item $elemento).PSIsContainer)){
 
+#Proceso solo archivos que contengan algo (si es un archivo vacio, no lo tengo en cuenta)
 if((Get-Item $elemento).Length -gt 0){
 
     Write-Host "Procesando $elemento" -ForegroundColor magenta
