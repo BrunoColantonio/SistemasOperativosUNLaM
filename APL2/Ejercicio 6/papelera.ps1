@@ -231,7 +231,7 @@ function Eliminar-Archivo([String]$dirPapelera, [String]$dirArchivo) {
 
 function Borrar-Archivo([String]$dirPapelera, [String]$nomArchivo, [int]$cantArchivos) {
 	$numArchivo = Read-Host "¿Qué archivo desea borrar definitivamente?"
-    ( ( $numArchivo -gt $cantArchivos ) -or ( $numArchivo -lt 1 ) )
+    if( ( $numArchivo -gt $cantArchivos ) -or ( $numArchivo -lt 1 ) )
     {
         Write-Host "Error: El número de archivo seleccionado no existe."
         exit

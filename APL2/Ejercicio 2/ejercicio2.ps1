@@ -128,6 +128,11 @@ $files = Get-ChildItem -Path $logs | Select-Object -ExpandProperty FullName
 
 foreach($elemento in $files){
 
+
+if((Get-Item $elemento).Length -gt 0){
+
+    Write-Host "Procesando $elemento" -ForegroundColor magenta
+
 #Para cada archivo, creo un objeto nuevo con sus propiedades, para luego poder ordenarlo
 $registros = @()
 
@@ -350,6 +355,7 @@ for( $k=0; $k -lt $contenido.Length; $k+=2){
             }
     }
   }
+  
 }
 
    mostrarResultadosDia $cantLlamadasXUsuarioDia $promedioTiempoXUsuarioDia $fechaAnterior $promedioTiempoDia $cantLlamadasBajoMediaDia
@@ -358,6 +364,11 @@ for( $k=0; $k -lt $contenido.Length; $k+=2){
 
    mostmostrarResultadosSemana $cantLlamadasXUsuarioSemana $cantLlamadasBajoMediaXUsuarioSemana
 
+}
+else{
+    Write-Host "---El archivo $elemento esta vacio---" -ForegroundColor magenta
+
+}
 }
 
 }
