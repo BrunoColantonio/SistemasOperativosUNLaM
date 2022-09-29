@@ -128,6 +128,7 @@ $files = Get-ChildItem -Path $logs | Select-Object -ExpandProperty FullName
 
 foreach($elemento in $files){
 
+if(!((Get-Item $elemento).PSIsContainer)){
 
 if((Get-Item $elemento).Length -gt 0){
 
@@ -368,6 +369,7 @@ for( $k=0; $k -lt $contenido.Length; $k+=2){
 else{
     Write-Host "---El archivo $elemento esta vacio---" -ForegroundColor magenta
 
+}
 }
 }
 
