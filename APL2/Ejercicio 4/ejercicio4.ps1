@@ -2,18 +2,18 @@
 -------------------------- ENCABEZADO --------------------------
 
 Nombre del script: ejercicio4.ps1
-Número de APL: 2
-Número de ejercicio: 4
-Número de entrega: Entrega
+Nï¿½mero de APL: 2
+Nï¿½mero de ejercicio: 4
+Nï¿½mero de entrega: Entrega
 
 ---------------- INTEGRANTES DEL GRUPO ----------------
 
 Apellido, Nombre          | DNI
-Agostino, Matías          | 43861796
+Agostino, Matï¿½as          | 43861796
 Colantonio, Bruno Ignacio | 43863195
-Fernández, Rocío Belén    | 43875244
+Fernï¿½ndez, Rocï¿½o Belï¿½n    | 43875244
 Galo, Santiago Ezequiel   | 43473506
-Panigazzi, Agustín Fabián | 43744593
+Panigazzi, Agustï¿½n Fabiï¿½n | 43744593
 
 -------------------- FIN DE ENCABEZADO --------------------
 #>
@@ -27,7 +27,7 @@ Panigazzi, Agustín Fabián | 43744593
     El script cuenta con dos parametros obligatorios:
     La ruta, en la cual se le indica la direccion de los archivos a analizar.
     Las extensiones, en donde se le indica las extensiones de los archivos a analizar. 
-    Solo tendrá en cuenta archivos con esas extensiones.
+    Solo tendrï¿½ en cuenta archivos con esas extensiones.
     Las extensiones deben estar pasadas separadas por coma como se muestra en los ejemplos.
     En caso de no proporcionarlas correctamente se pedira que las ingrese una por una, finalizando con un doble enter.
 
@@ -50,7 +50,11 @@ Param (
 
 function validarDirectorio(){
     if(!(Test-Path $ruta)){
-        Write-Host "---¡EL DIRECTORIO INDICADO NO EXISTE!---"
+        Write-Host "---LA RUTA INDICADA NO EXISTE!---"
+        exit
+    } 
+    elseif ( ! (Get-Acl $ruta).Access ) {
+        Write-Host "No se tienen los permisos necesarios para trabajar sobre el directirio" $ruta
         exit
     }
 }
