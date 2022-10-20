@@ -53,8 +53,8 @@ int main(int argc, char* argv[])
 
 	mostrarInformacion(getpid(), 1, getppid(), "Padre");
 
-	// Asociación de la señal SIGQUIT con el manejador propio de los procesos (para poder esperar a que se ingrese una tecla), se "hereda" con el fork
-	signal( SIGQUIT, manejadorEspera );
+	// Asociación de la señal SIGUSR2 con el manejador propio de los procesos (para poder esperar a que se ingrese una tecla), se "hereda" con el fork
+	signal( SIGUSR2, manejadorEspera );
 
 	/* -------------- Creación del Hijo 1 -------------- */
 
@@ -127,8 +127,8 @@ int main(int argc, char* argv[])
 			while( !finEspera )
 				usleep(100000);
 	
-			kill(pidBisnieto1, SIGQUIT);
-			kill(pidBisnieto2, SIGQUIT);
+			kill(pidBisnieto1, SIGUSR2);
+			kill(pidBisnieto2, SIGUSR2);
 	
 			waitpid(pidBisnieto1, NULL, 0);
 			waitpid(pidBisnieto2, NULL, 0);
@@ -182,7 +182,8 @@ int main(int argc, char* argv[])
 				{
 					mostrarInformacion(getpid(), 5, getppid(), "Demonio");
 
-					puts("Los procesos se encuentran pausados para poder verificar con el comando ps o pstree toda la jerarquía de procesos generada. Presione enter para finalizar el programa.");
+					puts("Los procesos se encuentran pausados para poder verificar con el comando \"ps -auxf\" toda la jerarquía de procesos generada. Presione enter para finalizar el programa.");
+					puts("Nota: El demonio se continuará ejecutando en segundo plano luego de finalizar el programa. Para finalizarlo, ejecute el comando \"kill -SIGUSR1 <pid_demonio>\"");
 				}
 				// Finalización del proceso padre para dejar huérfano al hijo
 				else
@@ -214,7 +215,7 @@ int main(int argc, char* argv[])
 			while( !finEspera )
 				usleep(100000);
 	
-			kill(pidBisnieto3, SIGQUIT);
+			kill(pidBisnieto3, SIGUSR2);
 	
 			waitpid(pidBisnieto3, NULL, 0);
 
@@ -224,8 +225,8 @@ int main(int argc, char* argv[])
 		while( !finEspera )
 			usleep(100000);
 
-		kill(pidNieto1, SIGQUIT);
-		kill(pidNieto2, SIGQUIT);
+		kill(pidNieto1, SIGUSR2);
+		kill(pidNieto2, SIGUSR2);
 
 		waitpid(pidNieto1, NULL, 0);
 		waitpid(pidNieto2, NULL, 0);
@@ -337,8 +338,8 @@ int main(int argc, char* argv[])
 			while( !finEspera )
 				usleep(100000);
 
-			kill(pidBisnieto4, SIGQUIT);
-			kill(pidBisnieto5, SIGQUIT);
+			kill(pidBisnieto4, SIGUSR2);
+			kill(pidBisnieto5, SIGUSR2);
 
 			waitpid(pidBisnieto4, NULL, 0);
 			waitpid(pidBisnieto5, NULL, 0);
@@ -349,21 +350,21 @@ int main(int argc, char* argv[])
 		while( !finEspera )
 			usleep(100000);
 
-		kill(pidNieto3, SIGQUIT);
+		kill(pidNieto3, SIGUSR2);
 
 		waitpid(pidNieto3, NULL, 0);
 
 		return 0;
 	}
 
-	// Una vez que el proceso padre reciba la tecla ingresada, procede a enviar la señal SIGQUIT a sus hijos, los cuales enviarán la señal a sus hijos y así sucesivamente,
+	// Una vez que el proceso padre reciba la tecla ingresada, procede a enviar la señal SIGUSR2 a sus hijos, los cuales enviarán la señal a sus hijos y así sucesivamente,
 	// de manera tal que los procesos queden en espera y así poder ver con el comando ps o pstree la jerarquía de procesos generada.
 	// El uso de señales permite finalizar todos los procesos con un único getchar
 
 	getchar();
 
-	kill(pidHijo1, SIGQUIT);
-	kill(pidHijo2, SIGQUIT);
+	kill(pidHijo1, SIGUSR2);
+	kill(pidHijo2, SIGUSR2);
 
 	waitpid(pidHijo1, NULL, 0);
 	waitpid(pidHijo2, NULL, 0);
