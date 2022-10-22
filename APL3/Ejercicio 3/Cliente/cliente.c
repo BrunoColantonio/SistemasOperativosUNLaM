@@ -5,6 +5,7 @@
 #include <sys/stat.h>
 #include <unistd.h>
 #include <fcntl.h>
+#include <signal.h>
 
 #define TAM_COMANDO 100  
 #define SIN_STOCK 1
@@ -30,7 +31,7 @@ typedef struct {
 }t_producto;
  
 void mostrarOpciones(); 
-void resolver(); 
+void resolver(pid_t *pid); 
 void ayuda();
 int validarComando(char *comando, t_comando *parteEntera);
 void removerSaltoDeLinea(char *string);
@@ -41,6 +42,8 @@ void mostrarProducto(void *dato);
 
 int main(int argc, char *argv[]) {  
 	 
+	pid_t pidServer;
+	signal(SIGINT, SIG_IGN);
 	//Se revisa si se recibió un parametro de ayuda     
 	if(argc == 2){         
 		if(strcmp(argv[1],"-help") == 0 || strcmp(argv[1],"-h") == 0){             			ayuda();             
@@ -52,16 +55,36 @@ int main(int argc, char *argv[]) {
 		printf("Este script NO recibe parametros.\n");         
 		ayuda();     
 	} else { 
-		if(crearFifos() == -1){
-			printf("ERROR AL CREAR LAS FIFOS\n\n");
-			exit(1);
-		}
-	
-		resolver();
 		
-		borrarFifos();           
+		char archivoClientes[100] = "../Logs/cliente.txt";
+		char archivoServidor[100] = "../Logs/servidor.txt";
+		int seCrearonFifos;
+		//SE CHEQUEA QUE EL ARCHIVO CLIENTE NO EXISTA,
+		//SI EXISTE, QUIERE DECIR QUE YA HAY UN CLIENTE CONECTADO
+		
+		if(access(archivoClientes, F_OK) == 0) {
+			printf("Solo se permite una instancia de cliente.\n\n");
+			return 0;
+		} 
+		
+		//SI NO HAY UN SERVIDOR, SE CREAN LAS FIFOS
+		if((seCrearonFifos = access(archivoServidor, F_OK)) != 0){
+			if(crearFifos() == -1){
+				printf("ERROR AL CREAR LAS FIFOS\n\n");
+				exit(1);
+			}
+		}
+			
+		FILE *pf = fopen(archivoClientes, "w");
+		resolver(&pidServer);
+		
+		if(seCrearonFifos != 0)
+			borrarFifos();
+		fclose(pf);
+		remove(archivoClientes);
 	}   
 	   
+	kill(pidServer, SIGUSR2);
 	return 0; 
 }
 
@@ -74,7 +97,7 @@ void mostrarOpciones(){
 	printf("QUIT|Finaliza la ejecucion\n\n"); 
 }   
 
-void resolver(){       
+void resolver(pid_t *pidServer){       
 	char comando[TAM_COMANDO]; 
 	char fin[TAM_COMANDO] = "QUIT";
 	int tipoComando, parteEntera, cantAReponer;
@@ -115,6 +138,12 @@ void resolver(){
 				//Defino como criterio ID finalizacion -1
 				read(fifo2, &producto, sizeof(t_producto));
 				
+				//LEO EL PID DEL DEMONIO SERVIDOR PARA MATARLO
+				if(!strcmp(comando, "QUIT")){
+					FILE *pf = fopen("../Logs/servidor.txt", "rb");
+					fread(pidServer, 1, sizeof(pid_t), pf);
+				}
+				
 				if(producto.id == -1 && tipoComando == SIN_STOCK)
 					printf("NO hay productos sin stock.\n\n");
 				else if(producto.id == -1 && tipoComando == LIST)
@@ -141,6 +170,7 @@ void resolver(){
 		}
 		
 	}while(strcmp(comando,"QUIT") != 0);    
+	
 	
 	close(fifo1);
 	close(fifo2); 

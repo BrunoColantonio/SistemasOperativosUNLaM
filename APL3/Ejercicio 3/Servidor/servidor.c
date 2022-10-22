@@ -5,6 +5,8 @@
 #include <sys/stat.h>
 #include <unistd.h>
 #include <fcntl.h>
+#include <signal.h>
+#include <sys/types.h>
 
 #define TAM_COMANDO 100  
 #define NOMBRE_ARCHIVO 50
@@ -49,6 +51,8 @@ int bajarArchivo(t_lista *lista, char *nombreArch);
 int trozarLongitudVariable(t_producto *producto, char *s);
 int mostrarProducto(const void *dato, int *fifo);
 void ayuda();
+void borrarFifos();
+int crearFifos();
 
 //COMANDOS
 int stockPorId(const void *dato, int id, int *fifo);
@@ -63,81 +67,134 @@ int verUltimoLista(const t_lista *lista, unsigned tam, void *dato);
 int recorrerLista(t_lista *lista, int(*accion)(const void *dato, int* fifo), int* fif);
 int recorrerListaConParam(t_lista *lista, int id, int *fif, int(*accion)(const void *dato, int id, int *fifo));
 
+//DEMONIO
+
+void manejadorDemonio(int signal);
+bool finDemonio = false;
+
 int main(int argc, char *argv[]){
 	
 	char archivo[NOMBRE_ARCHIVO];
+	char aux[NOMBRE_ARCHIVO] = "../Archivos/";
 	int fifo1, fifo2;
 	int cant;
 	t_lista lista, inicio;
 	t_comando comando;
 	t_producto prodFinalizador;
 	int retorno;
+	bool fin = false;
+	signal(SIGINT, SIG_IGN);
 	
-
+	
 	//Se revisa si se recibió un parametro de ayuda     
-	if(argc == 2){         
-		if(strcmp(argv[1],"-help") == 0 || strcmp(argv[1],"-h") == 0){             			ayuda();             
-		} else{
-			strcpy(archivo, argv[1]);
-			crearLista(&lista);
-			cant = cantidadDeLineasArch(archivo);
-			
-			if(cant == 0){
-				printf("ERROR. ARCHIVO VACIO\n");
-				exit(0);
-			} else if(cant == -1){
-				printf("ERROR. ARCHIVO INEXISTENTE\n");
-				exit(0);
-			}
-	
-			bajarArchivo(&lista, archivo);
-			inicio = lista;
-	
-			fifo1 = open("../Fifos/fifo1", O_RDONLY);
-			fifo2 = open("../Fifos/fifo2", O_WRONLY);
-			
-			if(fifo1 == -1 || fifo2 == -1) {
-				printf("Error al abrir las fifos.\n");
-				exit(1);
-			}
-	
-			read(fifo1, &comando, sizeof(t_comando));
-			
-			prodFinalizador.id = -1;
-			while(strcmp(comando.comando, "QUIT") != 0){
-				//lista = inicio;
-						
-				if(!strcmp(comando.comando, "SIN_STOCK")){
-					retorno = recorrerLista(&lista, sinStock, &fifo2);
-					write(fifo2, &prodFinalizador, sizeof(t_producto));
-					
-				} else if(!strcmp(comando.comando, "LIST")){
-				
-				recorrerLista(&lista, listar, &fifo2);
-				write(fifo2, &prodFinalizador, sizeof(t_producto));
-				
-				} else if(!strcmp(comando.comando, "STOCK")){
-				
-				retorno = recorrerListaConParam(&lista, comando.parteNumerica,&fifo2, stockPorId);
-				if(!retorno) 
-					write(fifo2, &prodFinalizador, sizeof(t_producto));
-				
-				} else if(!strcmp(comando.comando, "REPO")){
-			
-				int total = recorrerListaConParam(&lista, comando.parteNumerica,&fifo2, reponer); 
-				write(fifo2, &total, sizeof(int));
-				}
-		
-				read(fifo1, &comando, sizeof(t_comando));
-			}
-	
-			close(fifo1);
-			close(fifo2);
-		}
-	} else {         
+	if(argc != 2){    
 		printf("Error de parametros.\n\n");         
-		ayuda();     
+		ayuda();
+		return 0;
+	}
+	     
+	if(strcmp(argv[1],"-help") == 0 || strcmp(argv[1],"-h") == 0){             					ayuda();  
+		return 1;         
 	} 
+	
+	char archivoClientes[100] = "../Logs/cliente.txt";
+	char archivoServidor[100] = "../Logs/servidor.txt";
+	int seCrearonFifos;
+		
+	//SI HAY UN SERVIDOR, CIERRA EL PROGRAMA
+	//SOLO SE PERMITE UNA INSTANCIA
+	if(access(archivoServidor, F_OK) == 0) {
+		printf("Solo se permite una instancia de servidor.\n\n");
+		return 0;
+	}
+	
+	strcpy(archivo, argv[1]);
+	crearLista(&lista);
+	strcat(aux, archivo);
+	cant = cantidadDeLineasArch(aux);
+			
+	if(cant == 0){
+		printf("ERROR. ARCHIVO VACIO\n");
+		exit(0);
+	} else if(cant == -1){
+		printf("ERROR. ARCHIVO INEXISTENTE\n");
+		exit(0);
+	}
+	
+	//DEMONIO
+	signal(SIGUSR2, manejadorDemonio);
+	pid_t pid = fork();
+	
+	if(pid < 0)
+		return 1;
+	printf("PID: %d\n", getpid());
+	
+	pid_t sid = setsid();
+	if(sid < 0){
+		printf("Erorr al ejecutar setsid: %d\n", sid);
+		return 1;
+	}
+			
+	//SI YA HAY UN CLIENTE, NO CREA LAS FIFOS
+	if((seCrearonFifos =  access(archivoClientes, F_OK)) != 0) {
+		if(crearFifos() == -1){
+			printf("ERROR AL CREAR LAS FIFOS\n\n");
+			exit(1);
+		}
+	}
+	
+	//ESCRIBO EL PID PARA QUE CLIENTE ME CIERRE CUANDO MANDA QUIT		
+	FILE *pf = fopen(archivoServidor, "wb");
+	fwrite(&pid,1,sizeof(pid_t), pf);
+			
+	bajarArchivo(&lista, aux);
+	inicio = lista;
+
+	fifo1 = open("../Fifos/fifo1", O_RDONLY);
+	fifo2 = open("../Fifos/fifo2", O_WRONLY);
+			
+	if(fifo1 == -1 || fifo2 == -1) {
+		printf("Error al abrir las fifos.\n");
+		exit(1);
+	}
+	
+	read(fifo1, &comando, sizeof(t_comando));
+			
+	prodFinalizador.id = -1;
+	while(strcmp(comando.comando, "QUIT") != 0){
+		//lista = inicio;
+						
+		if(!strcmp(comando.comando, "SIN_STOCK")){
+			retorno = recorrerLista(&lista, sinStock, &fifo2);
+			write(fifo2, &prodFinalizador, sizeof(t_producto));
+				
+		} else if(!strcmp(comando.comando, "LIST")){
+			
+		recorrerLista(&lista, listar, &fifo2);
+		write(fifo2, &prodFinalizador, sizeof(t_producto));
+				
+		} else if(!strcmp(comando.comando, "STOCK")){
+				
+		retorno = recorrerListaConParam(&lista, comando.parteNumerica,&fifo2, stockPorId);
+		if(!retorno) 
+			write(fifo2, &prodFinalizador, sizeof(t_producto));
+				
+		} else if(!strcmp(comando.comando, "REPO")){
+			
+		int total = recorrerListaConParam(&lista, comando.parteNumerica,&fifo2, reponer); 
+		write(fifo2, &total, sizeof(int));
+		}
+		
+		read(fifo1, &comando, sizeof(t_comando));
+	}
+	
+	close(fifo1);
+	close(fifo2);
+			
+	if(seCrearonFifos != 0)
+		borrarFifos();
+	fclose(pf);
+	remove(archivoServidor);
 	
 	return 0;
 }
@@ -341,4 +398,21 @@ int recorrerListaConParam(t_lista *lista, int id, int *fifo, int(*accion)(const 
 
 void ayuda(){
 	printf("Ayuda\n");
+}
+
+int crearFifos(){
+
+	if(mkfifo("../Fifos/fifo1", 0666) == -1 || mkfifo("../Fifos/fifo2", 0666) == -1)
+		return -1;
+	else 
+		return 1;
+}
+
+void borrarFifos(){
+	unlink("../Fifos/fifo1");
+	unlink("../Fifos/fifo2");
+}
+
+void manejadorDemonio(int signal){
+	finDemonio = true;
 }
