@@ -127,7 +127,10 @@ int main(int argc, char *argv[]){
 	
 	if(pid < 0)
 		return 1;
-	printf("PID: %d\n", getpid());
+	
+	if(pid > 0){
+		return 0;
+	}
 	
 	pid_t sid = setsid();
 	if(sid < 0){
