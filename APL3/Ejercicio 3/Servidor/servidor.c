@@ -400,7 +400,8 @@ int recorrerListaConParam(t_lista *lista, int id, int *fifo, int(*accion)(const 
 }
 
 void ayuda(){
-	printf("Ayuda\n");
+	printf("Este programa utiliza la comunicacion de Fifos para calcular lo que le pidas dado un archivo de Productos especificado\n"); 
+	printf("Revisa que el el comando sea el correcto");
 }
 
 int crearFifos(){

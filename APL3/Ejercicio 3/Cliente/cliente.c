@@ -245,5 +245,6 @@ void borrarFifos(){
 }
 
 void ayuda(){     
-	printf("ayuda\n"); 
+	printf("Este programa utiliza la comunicacion de Fifos para calcular lo que le pidas dado un archivo de Productos especificado\n"); 
+	printf("Revisa que el el comando sea el correcto");
 } 
