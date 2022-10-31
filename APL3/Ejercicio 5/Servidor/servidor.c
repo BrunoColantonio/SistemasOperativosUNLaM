@@ -2,7 +2,7 @@
 -------------------------- ENCABEZADO --------------------------
 Nombre del programa: servidor.c
 Número de APL: 3
-Número de ejercicio: 4
+Número de ejercicio: 5
 Número de entrega: Entrega
 ---------------- INTEGRANTES DEL GRUPO ----------------
 Apellido, Nombre          | DNI
@@ -122,6 +122,18 @@ int main(int argc, char *argv[])
     }
 	signal(SIGINT, SIG_IGN);
 
+    char archivoServidor[100] = "servidor.txt";
+
+    //SI YA HAY UNA INSTANCIA DE SERVIDOR, TERMINA EL PROGRAMA
+    if(access(archivoServidor, F_OK) == 0)
+    {
+        puts("YA HAY UNA INSTANCIA DEL PROCESO SERVIDOR!");
+        return 10;
+    }
+
+    //SI NO EXISTE EL ARCHIVO, LO CREO
+    FILE *pf = fopen(archivoServidor, "wt");
+
 	// DEMONIO
         signal(SIGUSR1, manejador); //Se asocia la señal SIGUSR1 con el manejador propio
        pid_t pid = fork();
@@ -225,6 +237,11 @@ int main(int argc, char *argv[])
     pthread_mutex_destroy(&mtx);
  	close(client_socket);
  	close(server_socket);
+
+    //CIERRO Y BORRO ARCHIVO PARA CORROBORAR QUE HAY UNA SOLA INSTANCIA
+    fcloes(pf);
+    remove(archivoServidor);
+    
  	return 0; 
 }
 

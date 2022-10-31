@@ -106,6 +106,17 @@ int main(int argc, char* argv[]){
         return 0;
     }
 
+    char archivoServidor[100] = "servidor.txt";
+
+    //SI YA HAY UNA INSTANCIA DE SERVIDOR, TERMINA EL PROGRAMA
+    if(access(archivoServidor, F_OK) == 0)
+    {
+        puts("YA HAY UNA INSTANCIA DEL PROCESO SERVIDOR!");
+        return 10;
+    }
+
+    FILE *pf = fopen(archivoServidor, "wt");
+
     // DEMONIO
         signal(SIGUSR1, manejador); //Se asocia la señal SIGUSR1 con el manejador propio
        pid_t pid = fork();
@@ -231,6 +242,10 @@ int main(int argc, char* argv[]){
 	//Marcar los semáforos para destruirlos
 	sem_unlink("/leer");
 	sem_unlink("/escribir");
+
+    //CIERRO Y BORRO ARCHIVO PARA CORROBORAR QUE HAY UNA SOLA INSTANCIA
+    fcloes(pf);
+    remove(archivoServidor);
 
 	return 0;
 }
