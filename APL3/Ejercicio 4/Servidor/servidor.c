@@ -244,7 +244,7 @@ int main(int argc, char* argv[]){
 	sem_unlink("/escribir");
 
     //CIERRO Y BORRO ARCHIVO PARA CORROBORAR QUE HAY UNA SOLA INSTANCIA
-    fcloes(pf);
+    fclose(pf);
     remove(archivoServidor);
 
 	return 0;

@@ -239,7 +239,7 @@ int main(int argc, char *argv[])
  	close(server_socket);
 
     //CIERRO Y BORRO ARCHIVO PARA CORROBORAR QUE HAY UNA SOLA INSTANCIA
-    fcloes(pf);
+    fclose(pf);
     remove(archivoServidor);
     
  	return 0; 
